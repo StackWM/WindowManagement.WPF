@@ -3,7 +3,6 @@
     using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
-    using WindowsDesktop;
     using JetBrains.Annotations;
     using LostTech.Stack.Utils;
     using LostTech.Stack.WindowManagement.WinApi;
@@ -123,7 +122,7 @@
             get {
                 if (!IsWindowVisible(this.Handle))
                     return false;
-                if (!VirtualDesktop.HasMinimalSupport)
+                if (!VirtualDesktopStub.HasMinimalSupport)
                     return true;
                 Guid? desktopId = null;
 
@@ -131,7 +130,7 @@
                 COMException e = null;
                 while (timer.Elapsed < this.ShellUnresposivenessTimeout) {
                     try {
-                        desktopId = VirtualDesktop.IdFromHwnd(this.Handle);
+                        desktopId = VirtualDesktopStub.IdFromHwnd(this.Handle);
                         e = null;
                         break;
                     } catch (COMException ex) {
@@ -153,11 +152,11 @@
         public bool IsValid => IsWindow(this.Handle);
         public bool IsOnCurrentDesktop {
             get {
-                if (!VirtualDesktop.HasMinimalSupport)
+                if (!VirtualDesktopStub.HasMinimalSupport)
                     return true;
 
                 try {
-                    return VirtualDesktopHelper.IsCurrentVirtualDesktop(this.Handle);
+                    return VirtualDesktopStub.IsCurrentVirtualDesktop(this.Handle);
                 } catch (COMException e)
                     when (WinApi.HResult.TYPE_E_ELEMENTNOTFOUND.EqualsCode(e.HResult)) {
                     this.Closed?.Invoke(this, EventArgs.Empty);
@@ -178,11 +177,11 @@
         [Obsolete("This API may not be supported in this version")]
         public bool IsVisibleOnAllDesktops {
             get {
-                if (!VirtualDesktop.IsSupported)
+                if (!VirtualDesktopStub.IsSupported)
                     return false;
 
                 try {
-                    return VirtualDesktop.IsPinnedWindow(this.Handle);
+                    return VirtualDesktopStub.IsPinnedWindow(this.Handle);
                 } catch (COMException e)
                     when (WinApi.HResult.TYPE_E_ELEMENTNOTFOUND.EqualsCode(e.HResult)) {
                     this.Closed?.Invoke(this, EventArgs.Empty);
