@@ -4,6 +4,8 @@
     <TargetFramework>net462</TargetFramework>
     <AssemblyName>LostTech.Stack.WindowManagement.WPF</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>
