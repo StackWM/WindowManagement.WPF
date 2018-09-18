@@ -97,6 +97,24 @@
 
         public Task<Rect> GetBounds() => Task.Run(() => this.Bounds);
 
+        public Task<Rect> GetClientBounds() => Task.Run(() => {
+            DwmGetWindowAttribute(this.Handle,
+                DwmApi.DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, out var buttonBounds,
+                Marshal.SizeOf<RECT>());
+
+            var bounds = this.Bounds;
+            if (buttonBounds.right == 0)
+                return bounds;
+
+            float titlebarLeft = bounds.Width - buttonBounds.right;
+            float titlebarRight = buttonBounds.bottom;
+            bounds.X += titlebarLeft;
+            bounds.Y += titlebarRight;
+            bounds.Width -= titlebarLeft;
+            bounds.Height -= titlebarRight;
+            return bounds;
+        });
+
         public string Title {
             get {
                 try {
