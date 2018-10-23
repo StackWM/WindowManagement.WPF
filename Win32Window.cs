@@ -10,6 +10,8 @@
     using static PInvoke.User32;
     using Win32Exception = System.ComponentModel.Win32Exception;
     using Rect = System.Drawing.RectangleF;
+    using System.Drawing;
+    using System.Collections.Generic;
 
     [DebuggerDisplay("{" + nameof(Title) + "}")]
     public sealed class Win32Window : IAppWindow, IEquatable<Win32Window>
@@ -113,6 +115,43 @@
             bounds.Width -= titlebarLeft;
             bounds.Height -= titlebarRight;
             return bounds;
+        });
+
+        public Task<IntPtr> GetIcon(int dpi = 96) => Task.Run(async () => {
+            IntPtr hIcon = SendMessage(this.Handle, WindowMessage.WM_GETICON, (IntPtr)2 /*small*/, (IntPtr)dpi);
+            if (hIcon != IntPtr.Zero) return hIcon;
+
+            hIcon = GetClassLong(this.Handle, ClassLong.GCLP_HICONSM);
+            if (hIcon != IntPtr.Zero) return hIcon;
+
+            GetWindowThreadProcessId(this.Handle, lpdwProcessId: out int processID);
+            if (processID == 0)
+                return hIcon;
+
+            try {
+                string exePath = GetExecutablePathAboveVista(processID);
+                if (exePath?.EndsWith("ApplicationFrameHost.exe", StringComparison.OrdinalIgnoreCase) == true) {
+                    Win32Window uwpWindow = null;
+                    this.ForEachChild(child => {
+                        int threadID = GetWindowThreadProcessId(child.Handle, out int childProcessID);
+                        if (threadID == 0 || childProcessID == processID)
+                            return true;
+
+                        uwpWindow = child;
+                        return false;
+                    });
+
+                    if (uwpWindow != null)
+                        return await uwpWindow.GetIcon(dpi).ConfigureAwait(false);
+                }
+                using (var icon = Icon.ExtractAssociatedIcon(exePath))
+                    return icon.Handle;
+            } catch (ArgumentException) { } catch (InvalidOperationException) { } catch (Exception e) {
+                Debug.WriteLine(e);
+                return hIcon;
+            }
+
+            return hIcon;
         });
 
         public string Title {
@@ -276,6 +315,19 @@
             return this.Equals((Win32Window) obj);
         }
 
+        public Exception ForEachChild(Func<Win32Window, bool> action) {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            var enumerator = new EnumChildProc((hwnd, _) => {
+                var window = new Win32Window(hwnd, this.SuppressSystemMargin);
+                return action(window);
+            });
+            bool done = EnumChildWindows(this.Handle, enumerator, IntPtr.Zero);
+            GC.KeepAlive(enumerator);
+            return done ? null : new Win32Exception();
+        }
+
         bool GetExcludeFromMargin() {
             GetWindowThreadProcessId(this.Handle, lpdwProcessId: out int processID);
             if (processID == 0)
@@ -332,6 +384,22 @@
 
         [DllImport("User32.dll", SetLastError = true)]
         static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+        [DllImport("User32.dll", SetLastError = true, CharSet = CharSet.None)]
+        static extern IntPtr GetClassLong(IntPtr hWnd, ClassLong parameter);
+        [DllImport("User32.dll", SetLastError = true)]
+        static extern bool EnumChildWindows(IntPtr parentHandle, EnumChildProc callback, IntPtr lParam);
+        delegate bool EnumChildProc(IntPtr hwnd, IntPtr lParam);
+        static string GetExecutablePathAboveVista(int ProcessId) {
+            using (var hprocess = Kernel32.OpenProcess(0x1000, false, ProcessId)) {
+                if (hprocess.DangerousGetHandle() != IntPtr.Zero) {
+                    string imageName = Kernel32.QueryFullProcessImageName(hprocess);
+                    if (!string.IsNullOrEmpty(imageName))
+                        return imageName;
+                }
+            }
+            return null;
+        }
+
         [DllImport("Dwmapi.dll")]
         static extern PInvoke.HResult DwmGetWindowAttribute(IntPtr hwnd, DwmApi.DWMWINDOWATTRIBUTE attribute, out RECT value, int valueSize);
 
@@ -345,5 +413,9 @@
         // ReSharper restore InconsistentNaming
 
         public TimeSpan ShellUnresposivenessTimeout { get; set; } = TimeSpan.FromMilliseconds(300);
+
+        enum ClassLong: int {
+            GCLP_HICONSM = -34,
+        }
     }
 }
