@@ -16,7 +16,7 @@
             return style.HasFlag(User32.WindowStylesEx.WS_EX_TOOLWINDOW);
         }
 
-        public static Exception SetIsListedInTaskSwitcher(this Window window, bool list) {
+        public static Exception? SetIsListedInTaskSwitcher(this Window window, bool list) {
             var helper = new WindowInteropHelper(window);
             var style = (User32.WindowStylesEx)User32.GetWindowLong(helper.Handle, User32.WindowLongIndexFlags.GWL_EXSTYLE);
             style = list

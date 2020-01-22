@@ -1,4 +1,4 @@
-﻿namespace LostTech.Stack.WindowManagement
+namespace LostTech.Stack.WindowManagement
 {
     using System;
     using System.Windows;
@@ -9,15 +9,13 @@
     public static class Win32Utils
     {
         static readonly Win32WindowFactory win32WindowFactory = new Win32WindowFactory();
-        [NotNull]
         public static Win32Window GetNativeWindow(this Window window) {
             if (window == null)
                 throw new ArgumentNullException(nameof(window));
             IntPtr handle = new WindowInteropHelper(window).Handle;
             return win32WindowFactory.Create(handle);
         }
-        [CanBeNull]
-        public static Win32Window TryGetNativeWindow(this Window window) {
+        public static Win32Window? TryGetNativeWindow(this Window window) {
             IntPtr handle = window.TryGetHandle();
             return handle == IntPtr.Zero ? null : win32WindowFactory.Create(handle);
         }
