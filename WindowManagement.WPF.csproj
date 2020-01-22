@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
@@ -11,15 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
-    <PackageReference Include="PInvoke.DwmApi" Version="0.5.184" />
-    <PackageReference Include="PInvoke.User32" Version="0.5.184" />
+    <PackageReference Include="PInvoke.DwmApi" Version="0.6.6" />
+    <PackageReference Include="PInvoke.User32" Version="0.6.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\External\VirtualDesktop\source\VirtualDesktop\VirtualDesktop.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\WindowManagement.Win32\WindowManagement.Win32.csproj" />
     <ProjectReference Include="..\WindowManagement\WindowManagement.csproj" />
   </ItemGroup>
 

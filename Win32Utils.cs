@@ -1,10 +1,9 @@
-namespace LostTech.Stack.WindowManagement
+﻿namespace LostTech.Stack.WindowManagement
 {
     using System;
+    using System.Diagnostics;
     using System.Windows;
     using System.Windows.Interop;
-    using JetBrains.Annotations;
-    using LostTech.Stack.Utils;
 
     public static class Win32Utils
     {
@@ -25,7 +24,7 @@ namespace LostTech.Stack.WindowManagement
             try {
                 return new WindowInteropHelper(window).Handle;
             } catch(Exception e) {
-                e.ReportAsWarning(prefix: "Warning: Can't get window handle: ");
+                Debug.WriteLine("WARN: Can't get window handle: " + e);
                 return IntPtr.Zero;
             }
         }
