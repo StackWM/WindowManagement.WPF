@@ -16,9 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\External\VirtualDesktop\source\VirtualDesktop\VirtualDesktop.csproj">
-      <Private>false</Private>
-    </ProjectReference>
     <ProjectReference Include="..\WindowManagement.Win32\WindowManagement.Win32.csproj" />
     <ProjectReference Include="..\WindowManagement\WindowManagement.csproj" />
   </ItemGroup>
