@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>net462;net5.0-windows</TargetFrameworks>
     <AssemblyName>LostTech.Stack.WindowManagement.WPF</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
     <LangVersion>8.0</LangVersion>
@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="PInvoke.DwmApi" Version="0.6.6" />
     <PackageReference Include="PInvoke.User32" Version="0.6.6" />
   </ItemGroup>
