@@ -4,15 +4,25 @@
     <TargetFrameworks>net462;net6.0-windows</TargetFrameworks>
     <AssemblyName>LostTech.Stack.WindowManagement.WPF</AssemblyName>
     <RootNamespace>LostTech.Stack.WindowManagement</RootNamespace>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <Deterministic>False</Deterministic>
-		<UseWPF>true</UseWPF>
+    <UseWPF>true</UseWPF>
+
+    <!-- Package stuff -->
+    <!--<PackageLicenseFile>LICENSE</PackageLicenseFile>-->
+    <!--<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>-->
+
+    <!-- The following is recommended for public projects -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugSymbols>true</DebugSymbols>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -32,6 +42,8 @@
 
   <ItemGroup>
     <PackageReference Include="LostTech.Stack.WindowManagement" Version="3.0.0-clean" />
+    <!-- The following is recommended for public projects -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
